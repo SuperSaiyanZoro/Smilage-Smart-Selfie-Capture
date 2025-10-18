@@ -1,4 +1,0 @@
-Dataset,Type,Samples,Description,Status
-GENKI-4K,smile_detection,4000,Smile detection dataset with labeled faces,Not Downloaded
-UTKFace,age_prediction,23708,"Age, gender, and ethnicity prediction dataset",Not Downloaded
-FER-2013,emotion_detection,35887,Facial emotion recognition dataset,Not Downloaded
