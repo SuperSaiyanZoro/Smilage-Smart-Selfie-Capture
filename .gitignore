@@ -1,64 +1,51 @@
 # Python
+venv/
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
+dist/
+build/
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
 
-# Virtual Environment
-venv/
-ENV/
-env/
+# User generated content
+backend/captured_images/*.jpg
+backend/captured_images/*.png
+!backend/captured_images/.gitkeep
+
+# Models (optional - include if < 100MB total)
+# backend/models/*.caffemodel
+# backend/models/*.onnx
+
+# Node.js / React
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+
+# Environment
+.env
+.env.local
 
 # IDE
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# Test files (optional - keep for reference)
+backend/test_*.py
+backend/debug_*.py
+backend/snapshot_*.jpg
 
-# Frontend build
-frontend/dist/
-frontend/build/
-
-# Captured images
-backend/captured_images/*
-!backend/captured_images/.gitkeep
-
-# Model files
-backend/models/*.caffemodel
-backend/models/*.onnx
-backend/models/*.xml
-backend/models/*.pb
-
-# Environment variables
-.env
+# Logs
+*.log
