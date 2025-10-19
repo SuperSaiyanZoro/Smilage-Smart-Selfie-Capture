@@ -7,6 +7,7 @@ from .face_detector import FaceDetector
 from .age_predictor import AgePredictor
 from .gender_predictor import GenderPredictor
 from .emotion_predictor import EmotionPredictor
+from .smile_detector import SmileDetector  # NEW
 
 class VideoProcessor:
     """
@@ -21,9 +22,10 @@ class VideoProcessor:
         self.age_predictor = AgePredictor()
         self.gender_predictor = GenderPredictor()
         self.emotion_predictor = EmotionPredictor()
+        self.smile_detector = SmileDetector()
         
-        # Settings
-        self.smile_threshold = 0.5
+        # Settings - CHANGE THIS
+        self.smile_threshold = 0.15  # Changed from 0.5 to 0.15
         self.capture_dir = "captured_images"
         os.makedirs(self.capture_dir, exist_ok=True)
         
@@ -34,6 +36,8 @@ class VideoProcessor:
         self.last_predictions = {}
         
         print("✅ Video Processor initialized successfully!")
+
+
     
     def process_frame(self, frame):
         """
@@ -67,69 +71,82 @@ class VideoProcessor:
             # Check image quality
             is_clear, blur_score = self.detector.check_blur(face_img)
             
-            # Run predictions (optimize by running less frequently)
+            # Run predictions
             try:
-                # Run emotion every frame (needed for smile detection)
+                # IMPORTANT: Run emotion EVERY SINGLE FRAME for real-time updates
                 emotion, emotion_conf, all_emotions = self.emotion_predictor.predict_emotion(face_img)
                 
-                # Run age/gender every 5 frames
-                if self.frame_count % 5 == 0:
+                # Run age/gender every 10 frames (these can be slower)
+                if self.frame_count % 10 == 0 or len(self.last_predictions) == 0:
                     age_range, age_conf = self.age_predictor.predict_age(face_img)
                     gender, gender_conf = self.gender_predictor.predict_gender(face_img)
                     age_mid = self.age_predictor.get_age_midpoint(age_range)
                     
                     # Cache these predictions
-                    self.last_predictions['age'] = age_range
-                    self.last_predictions['age_mid'] = age_mid
-                    self.last_predictions['age_conf'] = age_conf
-                    self.last_predictions['gender'] = gender
-                    self.last_predictions['gender_conf'] = gender_conf
+                    self.last_predictions['age'] = str(age_range)
+                    self.last_predictions['age_mid'] = int(age_mid)
+                    self.last_predictions['age_conf'] = float(age_conf)
+                    self.last_predictions['gender'] = str(gender)
+                    self.last_predictions['gender_conf'] = float(gender_conf)
                 
-                # Use cached predictions if available
+                # Use cached age/gender (updated every 10 frames)
                 age_range = self.last_predictions.get('age', 'Unknown')
                 age_mid = self.last_predictions.get('age_mid', 0)
                 age_conf = self.last_predictions.get('age_conf', 0.0)
                 gender = self.last_predictions.get('gender', 'Unknown')
                 gender_conf = self.last_predictions.get('gender_conf', 0.0)
                 
-                # Check for smile
-                happiness_score = all_emotions.get('happiness', 0.0)
-                is_smiling = happiness_score > self.smile_threshold
+                # Check for smile - USE FRESH EMOTION DATA
+                # NEW: Check for smile using Haar Cascade (WORKS!)
+                smile_score = self.smile_detector.get_smile_score(face_img)
+                is_smiling = bool(smile_score > self.smile_threshold)
+                
+                # Still get emotion for display purposes
+                happiness_score = float(all_emotions.get('happiness', 0.0))
+                neutral_score = float(all_emotions.get('neutral', 0.0))
+                
+                # Print debug info every 30 frames
+                if self.frame_count % 30 == 0:
+                    print(f"Frame {self.frame_count}: Happiness={happiness_score:.3f}, Neutral={neutral_score:.3f}, Smiling={is_smiling}")
                 
                 face_data = {
-                    "bbox": {"x": int(x), "y": int(y), "w": int(w), "h": int(h)},
+                    "bbox": {
+                        "x": int(x), 
+                        "y": int(y), 
+                        "w": int(w), 
+                        "h": int(h)
+                    },
                     "age": age_range,
-                    "age_midpoint": int(age_mid),
-                    "age_confidence": float(age_conf),
+                    "age_midpoint": age_mid,
+                    "age_confidence": age_conf,
                     "gender": gender,
-                    "gender_confidence": float(gender_conf),
-                    "emotion": emotion,
+                    "gender_confidence": gender_conf,
+                    "emotion": str(emotion),
                     "emotion_confidence": float(emotion_conf),
-                    "happiness_score": float(happiness_score),
-                    "is_smiling": is_smiling,
-                    "is_clear": is_clear,
+                    "happiness_score": happiness_score,
+                    "smile_score": float(smile_score),  # NEW: Real smile score
+                    "neutral_score": neutral_score,
+                    "is_smiling": is_smiling,  # Now based on Haar Cascade
+                    "is_clear": bool(is_clear),
                     "blur_score": float(blur_score),
                     "all_emotions": {k: float(v) for k, v in all_emotions.items()}
                 }
+
                 
                 predictions["faces"].append(face_data)
                 
             except Exception as e:
                 print(f"⚠️ Error processing face: {e}")
+                import traceback
+                traceback.print_exc()
                 continue
         
         return predictions
+
     
     def draw_predictions(self, frame, predictions):
         """
         Draw predictions on frame for visualization
-        
-        Args:
-            frame: Input frame
-            predictions: Predictions dict from process_frame
-            
-        Returns:
-            Annotated frame
         """
         for face in predictions["faces"]:
             bbox = face["bbox"]
@@ -147,11 +164,11 @@ class VideoProcessor:
                 f"Age: {face['age_midpoint']} {face['age']}",
                 f"Gender: {face['gender']}",
                 f"Emotion: {face['emotion']}",
-                f"Happy: {face['happiness_score']:.2f}"
+                f"Smile: {face['smile_score']:.2f}"  # Changed from Happy to Smile
             ]
             
             if face["is_smiling"]:
-                texts.append("😊 SMILING!")
+                texts.append("SMILING!")
             
             # Draw text
             y_offset = y - 10
@@ -164,6 +181,7 @@ class VideoProcessor:
                 )
         
         return frame
+
     
     def capture_selfie(self, frame, predictions):
         """

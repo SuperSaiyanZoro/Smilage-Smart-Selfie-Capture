@@ -27,6 +27,19 @@ class EmotionPredictor:
         except Exception as e:
             raise Exception(f"Failed to load emotion model: {e}")
     
+    def softmax(self, x):
+        """
+        Apply softmax to convert logits to probabilities
+        
+        Args:
+            x: Input array (logits)
+            
+        Returns:
+            Probability distribution (sums to 1.0)
+        """
+        exp_x = np.exp(x - np.max(x))  # Subtract max for numerical stability
+        return exp_x / exp_x.sum()
+    
     def predict_emotion(self, face_image):
         """
         Predict emotion from face image
@@ -37,7 +50,7 @@ class EmotionPredictor:
         Returns:
             emotion: Predicted emotion label
             confidence: Confidence score (0-1)
-            all_scores: Dictionary of all emotion scores
+            all_scores: Dictionary of all emotion scores (probabilities)
         """
         # Convert to grayscale
         gray = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
@@ -53,17 +66,20 @@ class EmotionPredictor:
         
         # Run inference
         outputs = self.session.run(None, {self.input_name: input_data})
-        predictions = outputs[0][0]
+        logits = outputs[0][0]  # Raw model output (logits)
         
-        # Get emotion with highest score
-        emotion_index = np.argmax(predictions)
-        confidence = float(predictions[emotion_index])
+        # CRITICAL FIX: Apply softmax to get probabilities
+        probabilities = self.softmax(logits)
+        
+        # Get emotion with highest probability
+        emotion_index = np.argmax(probabilities)
+        confidence = float(probabilities[emotion_index])
         emotion = self.EMOTION_LABELS[emotion_index]
         
-        # Create dictionary of all emotion scores
+        # Create dictionary of all emotion probabilities
         all_scores = {
-            label: float(score) 
-            for label, score in zip(self.EMOTION_LABELS, predictions)
+            label: float(prob) 
+            for label, prob in zip(self.EMOTION_LABELS, probabilities)
         }
         
         return emotion, confidence, all_scores

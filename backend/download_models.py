@@ -24,32 +24,29 @@ download_file(
     "models/haarcascade_frontalface_default.xml"
 )
 
-# 2. Age Prediction Model (Caffe)
-print("2. Age Prediction Model (Caffe)")
+# NEW: Haar Cascade for Smile Detection
+print("2. Haar Cascade Smile Detector")
+download_file(
+    "https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_smile.xml",
+    "models/haarcascade_smile.xml"
+)
+
+# 3. Age Prediction Model (Caffe)
+print("3. Age Prediction Model (Caffe)")
 download_file(
     "https://github.com/GilLevi/AgeGenderDeepLearning/raw/master/models/age_net.caffemodel",
     "models/age_net.caffemodel"
 )
 
-download_file(
-    "https://raw.githubusercontent.com/GilLevi/AgeGenderDeepLearning/master/models/deploy_age.prototxt",
-    "models/age_deploy.prototxt"
-)
-
-# 3. Gender Prediction Model (Caffe)
-print("3. Gender Prediction Model (Caffe)")
+# 4. Gender Prediction Model (Caffe)
+print("4. Gender Prediction Model (Caffe)")
 download_file(
     "https://github.com/GilLevi/AgeGenderDeepLearning/raw/master/models/gender_net.caffemodel",
     "models/gender_net.caffemodel"
 )
 
-download_file(
-    "https://raw.githubusercontent.com/GilLevi/AgeGenderDeepLearning/master/models/deploy_gender.prototxt",
-    "models/gender_deploy.prototxt"
-)
-
-# 4. Emotion Detection Model (ONNX)
-print("4. Emotion Detection Model (ONNX)")
+# 5. Emotion Detection Model (ONNX) - Keep for emotion, not smile
+print("5. Emotion Detection Model (ONNX)")
 download_file(
     "https://github.com/onnx/models/raw/main/validated/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx",
     "models/emotion-ferplus-8.onnx"
@@ -58,8 +55,3 @@ download_file(
 print("="*60)
 print("✅ All models downloaded successfully!")
 print("="*60)
-print("\nModel files saved in 'models/' directory:")
-print("  - haarcascade_frontalface_default.xml (Face Detection)")
-print("  - age_net.caffemodel + age_deploy.prototxt (Age)")
-print("  - gender_net.caffemodel + gender_deploy.prototxt (Gender)")
-print("  - emotion-ferplus-8.onnx (Emotion)")
