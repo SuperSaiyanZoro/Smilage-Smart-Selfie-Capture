@@ -370,26 +370,6 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
-**Internship Project**
-- Organization: [Your Company/University]
-- Duration: [Start Date] - [End Date]
-- Supervisor: [Supervisor Name]
-
----
-
 ## 🙏 Acknowledgments
 
 - **OpenCV** - Computer vision library
@@ -398,15 +378,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Gil Levi** - Age and Gender prediction models
 - **Microsoft** - FER+ emotion recognition model
 - **ONNX** - AI model format and runtime
-
----
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-- **Issues**: [GitHub Issues](https://github.com/yourusername/Smilage-Smart-Selfie-Capture/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/Smilage-Smart-Selfie-Capture/discussions)
-- **Email**: your.email@example.com
 
 ---
 
@@ -419,7 +390,3 @@ For issues, questions, or suggestions:
 - **API Endpoints**: 8+
 
 ---
-
-**Made with ❤️ for AI-powered selfie capture**
-
-*Last Updated: October 19, 2025*
