@@ -49,3 +49,5 @@ backend/snapshot_*.jpg
 
 # Logs
 *.log
+backend/models/*.caffemodel 
+backend/models/*.onnx 
